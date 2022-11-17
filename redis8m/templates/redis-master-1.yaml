@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.name }}-master-1
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-master-1
+  serviceName: "{{ .Values.name }}-master-1"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-master-1
+    spec:
+      containers:
+      - name: {{ .Values.name }}-master-1
+        image: redis:7.0.5
+        resources:
+          requests:
+            cpu: "1"
+            memory: "1Gi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+        command: ['/bin/bash', '-c', 'cp -f -r /redis/conf/..data/* /etc/; echo -e "\ncluster-announce-hostname {{ .Values.name }}-master-1" >> /etc/redis.conf; redis-server /etc/redis.conf']
+        volumeMounts:
+        - name: {{ .Values.name }}-conf
+          mountPath: /redis/conf
+      volumes:
+        - name: {{ .Values.name }}-conf
+          configMap:
+            name: {{ .Values.name }}-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}-master-1
+spec:
+  selector:
+    app: {{ .Values.name }}-master-1
+  ports:
+  - port: {{ .Values.port }}
+    name: {{ .Values.name }}-client
+  - port: 1{{ .Values.port }}
+    name: {{ .Values.name }}-bus

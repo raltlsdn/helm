@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    name: {{ .Values.name }}
+spec:
+    serviceName: {{ .Values.name }}
+    replicas: 1
+    selector:
+        matchLabels:
+            app: {{ .Values.name }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.name }}
+        spec:
+            containers:
+            - name: {{ .Values.name }}
+              image: localhost:32000/oracle/database:21.3.0-ee
+              env:
+              - name: ORACLE_SID
+                value: "ORCL"
+              - name: ORACLE_EDITION
+                value: "enterprise"
+              resources:
+                requests:
+                    memory: "2Gi"
+                limits:
+                    memory: "2Gi"
+              ports:
+              - containerPort: 1521
+              - containerPort: 5500
+              volumeMounts:
+              - name: oradb
+                mountPath: /opt/oracle/oradata
+              - name: {{ .Values.name }}-init
+                mountPath: /opt/oracle/scripts/startup
+            volumes:
+            - name: {{ .Values.name }}-init
+              configMap:
+                name: {{ .Values.name }}-init-config
+    volumeClaimTemplates:
+    - metadata:
+        name: oradb
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+            requests:
+                storage: 15Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ .Values.name }}
+    labels:
+        app: {{ .Values.name }}
+spec:
+    selector:
+        app: {{ .Values.name }}
+    type: NodePort
+    ports:
+    - name: ora-listener
+      port: 1521
+      protocol: TCP
+      nodePort: 31521
+    - name: ora-xmldb
+      port: 5500
+      protocol: TCP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ .Values.name }}-init-config
+data:
+    init.sql: |
+        conn /as sysdba;
+        alter session set "_ORACLE_SCRIPT"=true;
+        CREATE USER CLT IDENTIFIED BY clt123;
+        GRANT CONNECT, RESOURCE, DBA TO CLT;
+
+
