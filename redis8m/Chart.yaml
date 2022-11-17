@@ -1,5 +1,0 @@
-apiVersion: v1
-appVersion: "1.0"
-description: Redis 8M Cluster Helm Chart
-name: redis-cluster
-version: 0.1.0
