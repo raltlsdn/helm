@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-conf
+data:
+  workers: |-
+    {{ .Values.name }}-worker-1
+    {{ .Values.name }}-worker-2
+    {{ .Values.name }}-worker-3
+  spark-env.sh: |-
+    JAVA_HOME="/opt/java/openjdk"
+    HADOOP_CONF_DIR="/hadoop/conf"
+  runner.sh: |-
+    #!/bin/bash
+    /opt/spark/sbin/start-all.sh

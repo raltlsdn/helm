@@ -3,4 +3,4 @@ replica: 2
 workers: "hd-master\n    hd-worker-1\n    hd-worker-2\n    hd-worker-3"
 dnvolume: 5
 nnvolume: 1
-master: "hd-master"
+master: "hd-master-0.hd-master"

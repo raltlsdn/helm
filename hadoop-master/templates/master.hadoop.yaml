@@ -74,6 +74,8 @@ spec:
     name: jh-ipc
   - port: 8050
     name: yarn-ipc
+  - port: 8030
+    name: rm-scheduler
   - port: 8080
     name: jobtrack
     nodePort: 30001

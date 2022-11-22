@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.name }}-worker-3
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-worker-3
+  serviceName: {{ .Values.name }}-worker-3
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-worker-3
+    spec:
+      containers:
+      - name: {{ .Values.name }}-worker-3
+        image: spark-base:3.3.1
+        command: ['/bin/bash', '-c', 'service ssh start; cp -f -r /{{ .Values.name }}/conf/..data/* /opt/spark/conf; chmod 755 /opt/spark/conf/spark-env.sh; bash; tail -f /dev/null']
+        env:
+        - name: SPARK_HOME
+          value: "/opt/spark"
+        - name: SPARK_MASTER_PORT
+          value: "7077"
+        - name: JAVA_HOME
+          value: "/opt/java/openjdk"
+        volumeMounts:
+        - name: {{ .Values.name }}-conf
+          mountPath: /{{ .Values.name }}/conf
+        - name: {{ .Values.hdname }}-conf
+          mountPath: /hadoop/conf
+      volumes:
+        - name: {{ .Values.name }}-conf
+          configMap:
+            name: {{ .Values.name }}-conf
+        - name: {{ .Values.hdname }}-conf
+          configMap:
+            name: {{ .Values.hdname }}-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}-worker-3
+spec:
+  selector:
+    app: {{ .Values.name }}-worker-3
+  ports:
+  - port: 7077
+    name: spark
+  - port: 22
+    name: ssh

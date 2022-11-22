@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.name }}-master
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-master
+  serviceName: {{ .Values.name }}-master
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-master
+    spec:
+      containers:
+      - name: {{ .Values.name }}-master
+        image: spark-base:3.3.1
+        command: ['/bin/bash', '-c', 'service ssh start; cp -f -r /{{ .Values.name }}/conf/..data/* /opt/spark/conf; chmod 755 /opt/spark/conf/spark-env.sh; tail -f /dev/null']
+        env:
+        - name: SPARK_HOME
+          value: "/opt/spark"
+        - name: SPARK_MASTER_PORT
+          value: "7077"
+        volumeMounts:
+        - name: {{ .Values.name }}-conf
+          mountPath: /{{ .Values.name }}/conf
+        - name: {{ .Values.hdname }}-conf
+          mountPath: /hadoop/conf
+      volumes:
+        - name: {{ .Values.name }}-conf
+          configMap:
+            name: {{ .Values.name }}-conf
+        - name: {{ .Values.hdname }}-conf
+          configMap:
+            name: {{ .Values.hdname }}-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}-master
+spec:
+  type: NodePort
+  selector:
+    app: {{ .Values.name }}-master
+  ports:
+  - port: 7077
+    name: spark
+  - port: 8080
+    name: sparkweb
+  - port: 22
+    name: ssh
+  - port: 4040
+    name: sparkcontextweb
+  - port: 8998
+    name: livyweb
