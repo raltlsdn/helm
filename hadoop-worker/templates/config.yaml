@@ -74,6 +74,10 @@ data:
                 <name>yarn.resourcemanager.hostname</name>
                 <value>{{ .Values.master }}</value>
         </property>
+        <property>
+                <name>yarn.log-aggregation-enable</name>
+                <value>true</value>
+        </property>
     </configuration>
   workers: |-
     {{ .Values.workers }}

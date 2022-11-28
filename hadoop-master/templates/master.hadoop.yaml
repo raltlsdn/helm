@@ -51,31 +51,34 @@ metadata:
 spec:
   selector:
     app: {{ .Values.name }}
-  type: NodePort
   ports:
   - port: 22
     name: ssh
-  - port: 9870
-    name: nn-web
-    nodePort: 30000
+  - port: 8020
+    name: nn
+  - port: 8030
+    name: rm-scheduler
+  - port: 8031
+    name: rm-tracker
+  - port: 8032
+    name: rm
+  - port: 8050
+    name: yarn-ipc
+  - port: 8080
+    name: jobtrack
   - port: 8088
     name: rm-web
-  - port: 19888
-    name: jh-web
   - port: 9000
     name: hdfs
   - port: 9001
     name: mapred
-  - port: 8032
-    name: rm
-  - port: 8031
-    name: nm
+  - port: 9870
+    name: nn-web
   - port: 10020
     name: jh-ipc
-  - port: 8050
-    name: yarn-ipc
-  - port: 8030
-    name: rm-scheduler
-  - port: 8080
-    name: jobtrack
-    nodePort: 30001
+  - port: 19888
+    name: jh-web
+  # - port: 8188
+  #   name: timeline-web
+  # - port: 10200
+  #   name: timeline-rpc

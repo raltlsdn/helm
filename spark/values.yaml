@@ -1,2 +1,3 @@
 name: "spark"
 hdname: "hd-worker"
+hostname: "localhost"

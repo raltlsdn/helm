@@ -7,7 +7,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: namenode.{{ .Values.hostname }}
+  - host: namenode.hadoop.{{ .Values.hostname }}
     http:
       paths:
       - pathType: Prefix
@@ -17,7 +17,7 @@ spec:
             name: {{ .Values.name }}
             port: 
               number: 9870
-  - host: resourcemanager.{{ .Values.hostname }}
+  - host: resource-manager.hadoop.{{ .Values.hostname }}
     http:
       paths:
       - pathType: Prefix
@@ -27,7 +27,7 @@ spec:
             name: {{ .Values.name }}
             port: 
               number: 8088
-  - host: jobhistory.{{ .Values.hostname }}
+  - host: job-history.hadoop.{{ .Values.hostname }}
     http:
       paths:
       - pathType: Prefix
@@ -36,4 +36,14 @@ spec:
           service:
             name: {{ .Values.name }}
             port: 
-              number: 19888    
+              number: 19888 
+  # - host: tl.{{ .Values.hostname }}
+  #   http:
+  #     paths:
+  #     - pathType: Prefix
+  #       path: /
+  #       backend:
+  #         service:
+  #           name: {{ .Values.name }}
+  #           port: 
+  #             number: 8188    

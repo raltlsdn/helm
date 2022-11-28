@@ -10,6 +10,14 @@ data:
   spark-env.sh: |-
     JAVA_HOME="/opt/java/openjdk"
     HADOOP_CONF_DIR="/hadoop/conf"
+    SPARK_MASTER_WEBUI_PORT="30080"
+    SPARK_PUBLIC_DNS="{{ .Values.hostname }}"
+  spark-defaults.conf: |-
+    spark.master  spark://spark-master:7077
+    spark.eventLog.enabled  true
+    spark.eventLog.dir  hdfs://hd-master:9000/spark/logs
+    spark.history.fs.logDirectory hdfs://hd-master:9000/spark/logs
+    spark.history.provider  org.apache.spark.deploy.history.FsHistoryProvider
   runner.sh: |-
     #!/bin/bash
     /opt/spark/sbin/start-all.sh

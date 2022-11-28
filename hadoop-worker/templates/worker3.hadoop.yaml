@@ -54,3 +54,7 @@ spec:
   ports:
   - port: 22
     name: ssh
+  - port: 8040
+    name: nm-ipc
+  - port: 8042
+    name: nm-web
